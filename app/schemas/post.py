@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 
-from pydantic import BaseModel, Extra, Field, validator
+from pydantic import BaseModel, Field, validator
 
 from app.validators.post import is_text
 
@@ -15,9 +15,10 @@ class PostIn(BaseModel):
     def field_(cls, field):
         is_text(field)
         return field
-    
+
+
 class PostCreate(PostIn):
-    pass    
+    pass
 
 
 class PostUpdate(PostIn):
