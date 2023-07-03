@@ -12,7 +12,7 @@ class Post(Base):
     updated = Column(DateTime)
     likes = Column(Integer, default=0)
     dislikes = Column(Integer, default=0)
-    author_id = Column(Integer, ForeignKey('user.id'))
+    author_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     author = orm.relationship('User', lazy='joined')
 
     def __repr__(self) -> str:

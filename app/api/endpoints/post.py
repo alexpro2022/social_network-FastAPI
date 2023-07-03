@@ -22,6 +22,7 @@ SUM_DISLIKE_POST = 'Поставить DISLIKE посту.'
 @router.get(
     '/',
     response_model=list[schemas.PostResponse],
+    response_model_exclude_none=True,
     summary=SUM_ALL_POSTS,
     description=(f'{settings.ALL_USERS} {SUM_ALL_POSTS}'))
 async def get_all_posts(session: AsyncSession = Depends(get_async_session)):
@@ -29,8 +30,23 @@ async def get_all_posts(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.get(
+    '/my_posts/',
+    response_model=list[schemas.PostResponse],
+    response_model_exclude_none=True,
+    dependencies=[Depends(current_user)],
+    summary=SUM_ALL_USER_POSTS,
+    description=(f'{settings.AUTH_ONLY} {SUM_ALL_USER_POSTS}'))
+async def get_user_posts_(
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
+):
+    return await post_crud.get_user_posts(session, user, exception=True)
+
+
+@router.get(
     '/{post_id}',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     summary=SUM_POST,
     description=(f'{settings.ALL_USERS} {SUM_POST}'))
 async def get_post(
@@ -43,6 +59,7 @@ async def get_post(
 @router.post(
     '/',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     summary=SUM_CREATE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_CREATE_POST}'))
@@ -57,6 +74,7 @@ async def create_post(
 @router.put(
     '/{post_id}',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     summary=SUM_UPDATE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_UPDATE_POST}'))
@@ -72,6 +90,7 @@ async def update_post(
 @router.delete(
     '/{post_id}',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     summary=SUM_DELETE_POST,
     description=(
@@ -85,21 +104,9 @@ async def delete_post(
 
 
 @router.get(
-    '/my_posts/',
-    response_model=list[schemas.PostResponse],
-    dependencies=[Depends(current_user)],
-    summary=SUM_ALL_USER_POSTS,
-    description=(f'{settings.AUTH_ONLY} {SUM_ALL_USER_POSTS}'))
-async def get_user_posts_(
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
-):
-    return await post_crud.get_user_posts(session, user)
-
-
-@router.get(
     '/like/{post_id}',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     summary=SUM_LIKE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_LIKE_POST}'))
@@ -114,6 +121,7 @@ async def like_post_(
 @router.get(
     '/dislike/{post_id}',
     response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     summary=SUM_DISLIKE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_DISLIKE_POST}'))

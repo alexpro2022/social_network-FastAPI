@@ -21,9 +21,12 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         if user is not None:
             create_data['author_id'] = user.id
 
-    def perform_update(self, obj: Post, update_data: dict) -> None:
-        """Sets the update time."""
+    def perform_update(self, obj: Post, update_data: dict) -> Post:
+        """Adds the update time and sets updated attributes of the post."""
         update_data['updated'] = dt.now()
+        for key in update_data:
+            setattr(obj, key, update_data[key])
+        return obj
 
     def has_permission(self, obj: Post, user: User) -> None:
         """Admin or author are only allowed to update/delete the post."""
@@ -40,9 +43,10 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         pass
 
     async def get_user_posts(
-            self, session: AsyncSession, user: User) -> list[Post] | None:
+        self, session: AsyncSession, user: User, exception: bool
+    ) -> list[Post] | None:
         return await self.get_all_by_attr(
-            session, 'author_id', user.id, exception=True)
+            session, 'author_id', user.id, exception=exception)
 
     async def like_dislike_post(
         self,

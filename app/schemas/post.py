@@ -7,7 +7,7 @@ from app.validators.post import is_text
 from .user import UserRead
 
 
-class PostCreate(BaseModel):
+class PostIn(BaseModel):
     title: str = Field(max_length=100, example='New post title.')
     content: str = Field(example='New post content.')
 
@@ -15,23 +15,15 @@ class PostCreate(BaseModel):
     def field_(cls, field):
         is_text(field)
         return field
+    
+class PostCreate(PostIn):
+    pass    
 
-    '''class Config:
-        extra = Extra.forbid'''
 
-
-class PostUpdate(BaseModel):
+class PostUpdate(PostIn):
     title: str | None = Field(
         None, max_length=100, example='update for title.')
     content: str | None = Field(None, example='update for content.')
-
-    @validator('title', 'content')
-    def field_(cls, field):
-        is_text(field)
-        return field
-
-    '''class Config:
-        extra = Extra.forbid'''
 
 
 class PostResponse(BaseModel):

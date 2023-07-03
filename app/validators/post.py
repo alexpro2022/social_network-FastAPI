@@ -1,6 +1,6 @@
 def is_text(field):
-    error_msg = (
-        'Поле не может быть пустой строкой '
-        'или быть последовательностью одного символа!')
-    if field in ('', ' ') or len(set(field)) < 2:
-        raise ValueError(error_msg)
+    if field in ('', ' '):
+        raise ValueError('Поле не может быть пустой строкой или пробелом!')
+    if len(set(field)) < 2:
+        raise ValueError(
+            'Поле не может быть последовательностью одного символа!')

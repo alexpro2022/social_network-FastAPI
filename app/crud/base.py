@@ -110,7 +110,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         raise NotImplementedError('perform_create() must be implemented.')
 
-    def perform_update(self, obj: ModelType, update_data: dict) -> None:
+    def perform_update(self, obj: ModelType, update_data: dict) -> ModelType:
         """Modify update_data here if necessary and return updated object."""
         raise NotImplementedError('perform_update() must be implemented.')
 
