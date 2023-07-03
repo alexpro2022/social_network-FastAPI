@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Post, User
-from app.models.post import Post
 from app.schemas import PostCreate, PostUpdate
 
 from .base import CRUDBase

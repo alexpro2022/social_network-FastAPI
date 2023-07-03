@@ -28,8 +28,10 @@ async def create_user(
 
 
 async def create_admin():
-    if (settings.admin_email is not None and
-        settings.admin_password is not None):
+    if (
+        settings.admin_email is not None and
+        settings.admin_password is not None
+    ):
         await create_user(email=settings.admin_email,
                           password=settings.admin_password,
                           is_superuser=True)

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     app_title: str = DEFAULT_STR
     app_description: str = DEFAULT_STR
     secret_key: str = DEFAULT_STR
-    database_url: str = DEFAULT_DB_URL    
+    database_url: str = DEFAULT_DB_URL
     token_lifetime: int = 3600
     token_url: str = 'auth/jwt/login'
     auth_backend_name = 'jwt'

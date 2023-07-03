@@ -11,7 +11,7 @@ class Post(Base):
     created = Column(DateTime, default=dt.now)
     updated = Column(DateTime)
     likes = Column(Integer, default=0)
-    dislikes = Column(Integer, default=0)    
+    dislikes = Column(Integer, default=0)
     author_id = Column(Integer, ForeignKey('user.id'))
     author = orm.relationship('User', lazy='joined')
 
@@ -25,4 +25,3 @@ class Post(Base):
             f'\ndislikes: {self.dislikes},'
             f'\nauthor: {self.author}.\n'
         )
-
