@@ -33,7 +33,6 @@ async def get_all_posts(session: AsyncSession = Depends(get_async_session)):
     '/my_posts/',
     response_model=list[schemas.PostResponse],
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_ALL_USER_POSTS,
     description=(f'{settings.AUTH_ONLY} {SUM_ALL_USER_POSTS}'))
 async def get_user_posts_(
@@ -60,7 +59,6 @@ async def get_post(
     '/',
     response_model=schemas.PostResponse,
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_CREATE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_CREATE_POST}'))
 async def create_post(
@@ -75,7 +73,6 @@ async def create_post(
     '/{post_id}',
     response_model=schemas.PostResponse,
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_UPDATE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_UPDATE_POST}'))
 async def update_post(
@@ -91,7 +88,6 @@ async def update_post(
     '/{post_id}',
     response_model=schemas.PostResponse,
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_DELETE_POST,
     description=(
         f'{settings.SUPER_ONLY} {SUM_DELETE_POST}'))
@@ -107,7 +103,6 @@ async def delete_post(
     '/like/{post_id}',
     response_model=schemas.PostResponse,
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_LIKE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_LIKE_POST}'))
 async def like_post_(
@@ -122,7 +117,6 @@ async def like_post_(
     '/dislike/{post_id}',
     response_model=schemas.PostResponse,
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)],
     summary=SUM_DISLIKE_POST,
     description=(f'{settings.AUTH_ONLY} {SUM_DISLIKE_POST}'))
 async def dislike_post_(
