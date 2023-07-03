@@ -3,6 +3,7 @@ from datetime import datetime as dt
 from pydantic import BaseModel, Extra, Field, validator
 
 from app.validators.post import is_text
+
 from .user import UserRead
 
 

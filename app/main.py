@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.api import main_router
-from app.core import settings, create_admin
+from app.core import create_admin, settings
 
 app = FastAPI(
     title=settings.app_title,

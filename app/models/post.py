@@ -1,7 +1,6 @@
 from datetime import datetime as dt
 
-from sqlalchemy import (
-    Column, DateTime, ForeignKey, Integer, orm, String, Text)
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, orm
 
 from app.core import Base
 

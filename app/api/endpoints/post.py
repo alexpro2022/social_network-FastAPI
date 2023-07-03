@@ -2,9 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import schemas
-from app.core import (current_user,
-                      get_async_session,
-                      settings)
+from app.core import current_user, get_async_session, settings
 from app.crud.post import post_crud
 from app.models import User
 
