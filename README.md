@@ -52,8 +52,7 @@
 ```bash
 docker --version && docker-compose --version
 ```
-<h1></h1>
-</details>
+<h1></h1></details>
 
 <details><summary>Локальный запуск</summary> 
 
@@ -119,23 +118,19 @@ docker compose -f infra/local/docker-compose.yml down -v
 ```
 <h1></h1></details>
 
-Для создания тестовых грузов можно воспользоваться следующими данными:
+Для создания тестовых постов можно воспользоваться следующими данными:
 
 ```json
 {
-  "delivery_zip": "00602",
-  "current_zip": "00601",
-  "description": "description",
-  "weight": 100
+  "title": "Yet New post title.",
+  "content": "Yet New post content."
 }
 ```
 
 ```json
 {
-  "delivery_zip": "33556",
-  "current_zip": "15049",
-  "description": "description",
-  "weight": 500
+  "title": "Another New post title.",
+  "content": "Another New post content."
 }
 ```
  
