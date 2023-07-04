@@ -28,11 +28,11 @@
 [![asyncpg](https://img.shields.io/badge/-asyncpg-464646?logo=PostgreSQL)](https://pypi.org/project/asyncpg/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-v2.0-blue?logo=sqlalchemy)](https://www.sqlalchemy.org/)
 [![Alembic](https://img.shields.io/badge/-Alembic-464646?logo=alembic)](https://alembic.sqlalchemy.org/en/latest/)
-[![docker_hub](https://img.shields.io/badge/-Docker_Hub-464646?logo=docker)](https://hub.docker.com/)
 [![docker_compose](https://img.shields.io/badge/-Docker%20Compose-464646?logo=docker)](https://docs.docker.com/compose/)
 [![Nginx](https://img.shields.io/badge/-NGINX-464646?logo=NGINX)](https://nginx.org/ru/)
 <!--[![Pytest](https://img.shields.io/badge/-Pytest-464646?logo=Pytest)](https://docs.pytest.org/en/latest/)
-[![Pytest-asyncio](https://img.shields.io/badge/-Pytest--asyncio-464646?logo=Pytest-asyncio)](https://pypi.org/project/pytest-asyncio/)-->
+[![Pytest-asyncio](https://img.shields.io/badge/-Pytest--asyncio-464646?logo=Pytest-asyncio)](https://pypi.org/project/pytest-asyncio/)
+[![docker_hub](https://img.shields.io/badge/-Docker_Hub-464646?logo=docker)](https://hub.docker.com/)-->
 
 [⬆️Оглавление](#оглавление)
 
@@ -119,7 +119,7 @@ alembic upgrade head
 uvicorn app.main:app
 ```
 Сервер Uvicorn запустит приложение по адресу http://127.0.0.1:8000.
-Администрирование приложения может быть осуществлено через Swagger доступный по адресу http://127.0.0.1:8000/docs (далее см. [Применение](#применение)).
+Администрирование приложения может быть осуществлено через Swagger доступный по адресу http://127.0.0.1:8000/docs .
 
 6. Остановить Uvicorn можно комбинацией клавиш Ctl-C.
 <h1></h1></details>
