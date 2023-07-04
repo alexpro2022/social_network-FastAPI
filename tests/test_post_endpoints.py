@@ -7,12 +7,14 @@ from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          get_headers,
                                          invalid_methods_test,
                                          valid_values_standard_tests)
+from .utils import check_created_post
 
 
 def test_unauthorized_user_can_get_posts():
-    def empty_list(response: list) -> str:
-        assert response == []
-        return 'DONE'    
+    def empty_list(response_json: list) -> str:
+        assert response_json == []
+        return 'DONE'
+    
     valid_values_standard_tests(GET, ENDPOINT, func_check_valid_response=empty_list)
 
 
@@ -25,25 +27,8 @@ def test_unauthorized_user_cannot_create_post():
 
 
 def test_authorized_user_can_create_post():
-    def created_post(response_json: dict) -> str:
-        assert isinstance(response_json['id'], int)
-        assert response_json['created'] is not None
-        assert response_json.get('updated') is None
-        assert response_json['likes'] == 0
-        assert response_json['dislikes'] == 0
-        assert response_json['title'] == POST_PAYLOAD['title']
-        assert response_json['content'] == POST_PAYLOAD['content']
-        author = response_json['author']
-        assert isinstance(author, dict)
-        assert isinstance(author['id'], int)
-        assert author['email'] == AUTH_USER['email']
-        assert author['is_active'] == True
-        assert author['is_superuser'] == False
-        assert author['is_verified'] == False        
-        return 'DONE'
-    
     headers=get_headers(get_auth_user_token(AUTH_USER))
-    valid_values_standard_tests(POST, ENDPOINT, json=POST_PAYLOAD, headers=headers, func_check_valid_response=created_post)
+    valid_values_standard_tests(POST, ENDPOINT, json=POST_PAYLOAD, headers=headers, func_check_valid_response=check_created_post)
 
 
 def test_post_json_invalid_values():
