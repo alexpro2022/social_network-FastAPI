@@ -6,7 +6,7 @@ from app.core import current_user, get_async_session, settings
 from app.crud.post import post_crud
 from app.models import User
 
-router = APIRouter(prefix='/posts', tags=['Posts'])
+router = APIRouter(prefix='/post', tags=['Posts'])
 
 SUM_ALL_POSTS = 'Возвращает список всех постов.'
 SUM_ALL_USER_POSTS = ('Возвращает список всех постов '
@@ -26,33 +26,7 @@ SUM_DISLIKE_POST = 'Поставить DISLIKE посту.'
     summary=SUM_ALL_POSTS,
     description=(f'{settings.ALL_USERS} {SUM_ALL_POSTS}'))
 async def get_all_posts(session: AsyncSession = Depends(get_async_session)):
-    return await post_crud.get_all(session, exception=True)
-
-
-@router.get(
-    '/my_posts/',
-    response_model=list[schemas.PostResponse],
-    response_model_exclude_none=True,
-    summary=SUM_ALL_USER_POSTS,
-    description=(f'{settings.AUTH_ONLY} {SUM_ALL_USER_POSTS}'))
-async def get_user_posts_(
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
-):
-    return await post_crud.get_user_posts(session, user, exception=True)
-
-
-@router.get(
-    '/{post_id}',
-    response_model=schemas.PostResponse,
-    response_model_exclude_none=True,
-    summary=SUM_POST,
-    description=(f'{settings.ALL_USERS} {SUM_POST}'))
-async def get_post(
-    post_id: int,
-    session: AsyncSession = Depends(get_async_session),
-):
-    return await post_crud.get_or_404(session, post_id)
+    return await post_crud.get_all(session)
 
 
 @router.post(
@@ -67,6 +41,19 @@ async def create_post(
     user: User = Depends(current_user)
 ):
     return await post_crud.create(session, payload, user=user)
+
+
+@router.get(
+    '/{post_id}',
+    response_model=schemas.PostResponse,
+    response_model_exclude_none=True,
+    summary=SUM_POST,
+    description=(f'{settings.ALL_USERS} {SUM_POST}'))
+async def get_post(
+    post_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    return await post_crud.get_or_404(session, post_id)
 
 
 @router.put(
@@ -125,3 +112,16 @@ async def dislike_post_(
     user: User = Depends(current_user)
 ):
     return await post_crud.like_dislike_post(session, post_id, user, False)
+
+
+@router.get(
+    '/my_posts/',
+    response_model=list[schemas.PostResponse],
+    response_model_exclude_none=True,
+    summary=SUM_ALL_USER_POSTS,
+    description=(f'{settings.AUTH_ONLY} {SUM_ALL_USER_POSTS}'))
+async def get_user_posts_(
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
+):
+    return await post_crud.get_user_posts(session, user)
