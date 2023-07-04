@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD, PUT_PAYLOAD, NOT_FOUND_MSG
+from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD, PUT_PAYLOAD, NOT_FOUND_MSG, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
 from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          assert_response,
                                          client,
@@ -42,3 +42,24 @@ def test_author_can_put():
 def test_author_can_delete():
     headers = create_post()
     valid_values_standard_tests(DELETE, ENDPOINT, path_param=ID, headers=headers, json=PUT_PAYLOAD, json_optional=True, func_check_valid_response=check_created_post)
+
+
+def test_put_json_invalid_values():
+    empty, space, sequence = '', ' ', 'aaaaaaaaaaaa'
+    headers = create_post()
+    for key in PUT_PAYLOAD:
+        invalid_payload = PUT_PAYLOAD.copy()
+        for invalid_value in ([], (), {}, empty, space, sequence):
+            invalid_payload[key] = invalid_value
+            response = assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, PUT, ENDPOINT, path_param=ID, json=invalid_payload, headers=headers)
+            if invalid_value in (empty, space):
+                assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_1
+            if invalid_value == sequence:
+                assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_2
+
+
+def test_post_json_invalid_title_length():
+    headers = create_post()
+    invalid_payload = PUT_PAYLOAD.copy()
+    invalid_payload['title'] = 'a' * 100 + 'c'
+    assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, PUT, ENDPOINT, path_param=ID, json=invalid_payload, headers=headers)
