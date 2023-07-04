@@ -4,15 +4,20 @@ from .fixtures.data import ENDPOINT, AUTHOR, POST_PAYLOAD, PUT_PAYLOAD, INVALID_
 from .fixtures.endpoints_testlib import assert_response, get_auth_user_token, get_headers, client, PUT, DONE
 
 
-def check_post(response_json: dict, payload: dict, user: dict, updated: bool = False) -> str:
+def empty_list(response_json: list) -> str:
+    assert response_json == []
+    return DONE
+
+
+def check_post(response_json: dict, payload: dict, user: dict, updated: bool = False, likes: int = 0, dislikes: int =0) -> str:
     assert isinstance(response_json['id'], int)
     assert response_json['created'] is not None
     if updated:
         assert response_json['updated'] is not None
     else:
         assert response_json.get('updated') is None
-    assert response_json['likes'] == 0
-    assert response_json['dislikes'] == 0
+    assert response_json['likes'] == likes
+    assert response_json['dislikes'] == dislikes
     assert response_json['title'] == payload['title']
     assert response_json['content'] == payload['content']
     author = response_json['author']
@@ -35,6 +40,14 @@ def check_updated_post(response_json: dict) -> str:
 
 def check_my_posts(response_json: list) -> str:
     return check_post(response_json[0], POST_PAYLOAD, AUTHOR)
+
+
+def check_liked_post(response_json: dict) -> str:
+    return check_post(response_json, POST_PAYLOAD, AUTHOR, likes=1)
+
+
+def check_disliked_post(response_json: dict) -> str:
+    return check_post(response_json, POST_PAYLOAD, AUTHOR, dislikes=1)
 
 
 def invalid_title_length(headers, method, payload: dict):
