@@ -152,8 +152,11 @@ def valid_values_standard_tests(
     *,
     path_param: int | str | None = None,
     params: dict[str:str] | None = None,
+    params_optional: bool = False,
     json: dict[str:str] | None = None,
+    json_optional: bool = False,
     data: dict[str:str] | None = None,
+    data_optional: bool = False,
     headers: dict | None = None,
     func_check_valid_response: Any | None = None,
     msg_invalid_path_param: str | None = None,
@@ -184,17 +187,17 @@ def valid_values_standard_tests(
                 assert response.json() == {'detail': msg_invalid_path_param}, response.json()
 
     # invalid_query_params_keys_test
-    if params is not None:
+    if params is not None and not params_optional:
         for invalid_keys_params in get_invalid(params):
             assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, method, endpoint, path_param=path_param, params=invalid_keys_params, json=json, data=data, headers=headers)
 
     # invalid_payload_keys_test
-    if json is not None:
+    if json is not None and not json_optional:
         for invalid_keys_json in get_invalid(json):
             assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, method, endpoint, path_param=path_param, params=params, json=invalid_keys_json, data=data, headers=headers)
 
     # invalid_form_keys_test
-    if data is not None:
+    if data is not None and not data_optional:
         for invalid_keys_data in get_invalid(data):
             assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, method, endpoint, path_param=path_param, params=params, json=json, data=invalid_keys_data, headers=headers)
 
