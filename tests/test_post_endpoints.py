@@ -1,18 +1,12 @@
 from http import HTTPStatus
 
+from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD
 from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          assert_response,
                                          get_auth_user_token,
                                          get_headers,
                                          invalid_methods_test,
                                          valid_values_standard_tests)
-
-ENDPOINT = 'post'
-AUTH_USER = {"email": "testuser@example.com", "password": "testpass"}
-POST_PAYLOAD = {
-  "title": "POST New post title.",
-  "content": "POST New post content."
-}
 
 
 def test_unauthorized_user_can_get_posts():
@@ -63,6 +57,7 @@ def test_post_json_invalid_values():
                 assert response.json()['detail'][0]['msg'] == 'Поле не может быть пустой строкой или пробелом!'
             if invalid_value == 'aaaaaaaaaaaa':
                 assert response.json()['detail'][0]['msg'] == 'Поле не может быть последовательностью одного символа!'
+
 
 def test_post_json_invalid_title_length():
     headers=get_headers(get_auth_user_token(AUTH_USER))
