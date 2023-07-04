@@ -6,12 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-
-Method: TypeAlias = Response
-Methods: TypeAlias = tuple[Method]
-PathParam: TypeAlias = int | str | None
-QueryParams: TypeAlias = dict[str:str] | None
-Payload: TypeAlias = dict[str:str] | None
+from .data import POST_ALREADY_EXISTS_MSG, POST_NOT_FOUND_MSG
 
 client = TestClient(app)
 
@@ -22,10 +17,25 @@ PATCH = 'PATCH'
 DELETE = 'DELETE'
 DONE = 'DONE'
 
+Method: TypeAlias = Response
+Methods: TypeAlias = tuple[Method]
+PathParam: TypeAlias = int | str | None
+QueryParams: TypeAlias = dict[str:str] | None
+Payload: TypeAlias = dict[str:str] | None
+
+
+def __assert_status(response: Response, expected_status_code: int) -> None:
+    assert response.status_code == expected_status_code, f'\n   {response.status_code}\n   {response.json()}'
+
+
+def __assert_msg(response: Response, expected_msg: str) -> None:
+    response_json = response.json()
+    assert response_json == {'detail': expected_msg}, f'\n   {response_json}'
+
 
 def get_registered(user: dict) -> None:
     response = client.post('/auth/register', json=user)
-    assert response.status_code == HTTPStatus.CREATED
+    __assert_status(response, HTTPStatus.CREATED)
     auth_user = response.json()
     assert isinstance(auth_user['id'], int)
     assert auth_user['email'] == user['email']
@@ -38,7 +48,7 @@ def get_auth_user_token(user: dict) -> str:
     get_registered(user)
     user['username'] = user['email']
     response = client.post('/auth/jwt/login', data=user)
-    assert response.status_code == HTTPStatus.OK, response.json()
+    __assert_status(response, HTTPStatus.OK)
     token = response.json()['access_token']
     assert isinstance(token, str)
     return token
@@ -126,7 +136,7 @@ def get_response(
 
 
 def assert_response(
-    status_code: int,
+    expected_status_code: int,
     method: str,
     endpoint: str,
     *,
@@ -137,9 +147,10 @@ def assert_response(
     headers: dict | None = None,
 ) -> Response:
     response: Response = get_response(method, endpoint, path_param=path_param, params=params, data=data, json=json, headers=headers)
-    assert response.status_code == status_code, (
-        f'{response.status_code} != {status_code} ->'
-        f'\n   {method}({create_endpoint(endpoint, path_param)}\n   {headers}\n   {params}\n   {json}\n   {data})\n')
+    assert response.status_code == expected_status_code, (
+        f'{response.status_code} != {expected_status_code} ->'
+        f'\n   {method}({create_endpoint(endpoint, path_param)}\n   {headers}\n   {params}\n   {json}\n   {data})'
+        f'\n   {response.json()}\n')
     return response
 
 
@@ -168,10 +179,12 @@ def standard_tests(
     match method.upper():
         # Sequential POST with the same data should get a Integrity Error wich raises BAD_REQUEST
         case 'POST':
-            assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=path_param, params=params, json=json, data=data, headers=headers)
+            r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=path_param, params=params, json=json, data=data, headers=headers)
+            __assert_msg(r, POST_ALREADY_EXISTS_MSG)
         # Sequential DELETE with the same data should get NOT_FOUND
         case 'DELETE':
-            assert_response(HTTPStatus.NOT_FOUND, method, endpoint, path_param=path_param, params=params, json=json, data=data, headers=headers)
+            r = assert_response(HTTPStatus.NOT_FOUND, method, endpoint, path_param=path_param, params=params, json=json, data=data, headers=headers)
+            __assert_msg(r, POST_NOT_FOUND_MSG)
     if func_check_valid_response is None:
         func_check_valid_response = __dummy_func
     assert func_check_valid_response(response.json()) == DONE
@@ -183,9 +196,9 @@ def standard_tests(
     # invalid_path_param_test
     if path_param is not None:
         for invalid_path_param in get_invalid(path_param):
-            response = assert_response(HTTPStatus.NOT_FOUND, method, endpoint, path_param=invalid_path_param, params=params, json=json, data=data, headers=headers)
+            r = assert_response(HTTPStatus.NOT_FOUND, method, endpoint, path_param=invalid_path_param, params=params, json=json, data=data, headers=headers)
             if msg_invalid_path_param is not None:
-                assert response.json() == {'detail': msg_invalid_path_param}, response.json()
+                __assert_msg(r, msg_invalid_path_param)
 
     # invalid_query_params_keys_test
     if params is not None and not params_optional:

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from .fixtures.data import ENDPOINT, AUTHOR, POST_PAYLOAD, PUT_PAYLOAD, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
-from .fixtures.endpoints_testlib import assert_response, PUT
+from .fixtures.endpoints_testlib import assert_response, get_auth_user_token, get_headers, client, PUT
 
 
 def check_post(response_json: dict, payload: dict, user: dict, updated: bool = False) -> str:
@@ -53,3 +53,9 @@ def json_invalid_values(headers, method, payload: dict):
                 assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_1
             if invalid_value == sequence:
                 assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_2
+
+
+def create_post() -> dict[str:str]:
+    headers = get_headers(get_auth_user_token(AUTHOR))
+    client.post(ENDPOINT, headers=headers, json=POST_PAYLOAD)
+    return headers 

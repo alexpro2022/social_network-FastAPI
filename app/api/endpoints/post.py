@@ -66,7 +66,7 @@ async def update_post(
     post_id: int,
     payload: schemas.PostUpdate,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     return await post_crud.update(session, post_id, payload, user=user)
 
@@ -95,7 +95,7 @@ async def delete_post(
 async def like_post_(
     post_id: int,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     return await post_crud.like_dislike_post(session, post_id, user)
 
@@ -109,7 +109,7 @@ async def like_post_(
 async def dislike_post_(
     post_id: int,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     return await post_crud.like_dislike_post(session, post_id, user, False)
 
