@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD, PUT_PAYLOAD, NOT_FOUND_MSG, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
+from .fixtures.data import AUTHOR, AUTH_USER, ENDPOINT, POST_PAYLOAD, PUT_PAYLOAD, NOT_FOUND_MSG, NO_PERMISSION_MSG
 from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          assert_response,
                                          client,
@@ -14,7 +14,7 @@ ID = 1
 
 
 def create_post():
-    headers = get_headers(get_auth_user_token(AUTH_USER))
+    headers = get_headers(get_auth_user_token(AUTHOR))
     client.post(ENDPOINT, headers=headers, json=POST_PAYLOAD)
     return headers 
 
@@ -33,6 +33,13 @@ def test_unauthorized_user_cannot_put_delete():
     for method in (PUT, DELETE):
         assert_response(HTTPStatus.UNAUTHORIZED, method, ENDPOINT, path_param=ID, json=POST_PAYLOAD)
 
+
+def test_authorized_cannot_put_delete():
+    create_post()
+    headers = get_headers(get_auth_user_token(AUTH_USER))
+    for method in (PUT, DELETE):
+        response = assert_response(HTTPStatus.BAD_REQUEST, method, ENDPOINT, path_param=ID, headers=headers, json=PUT_PAYLOAD)
+        assert response.json()['detail'] == NO_PERMISSION_MSG
 
 def test_author_can_put_delete():
     headers = create_post()
