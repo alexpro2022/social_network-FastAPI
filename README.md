@@ -1,6 +1,7 @@
 # Проект social_network-FastAPI: 
 
 [![Test Suite](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main%20copy.yml/badge.svg)](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main%20copy.yml)
+[![codecov](https://codecov.io/gh/alexpro2022/social_network-FastAPI/branch/main/graph/badge.svg?token=FfeaO0NLzk)](https://codecov.io/gh/alexpro2022/social_network-FastAPI)
 
 ### Simple RESTful API using FastAPI for a social networking application
 
@@ -30,9 +31,9 @@
 [![Alembic](https://img.shields.io/badge/-Alembic-464646?logo=alembic)](https://alembic.sqlalchemy.org/en/latest/)
 [![docker_compose](https://img.shields.io/badge/-Docker%20Compose-464646?logo=docker)](https://docs.docker.com/compose/)
 [![Nginx](https://img.shields.io/badge/-NGINX-464646?logo=NGINX)](https://nginx.org/ru/)
-<!--[![Pytest](https://img.shields.io/badge/-Pytest-464646?logo=Pytest)](https://docs.pytest.org/en/latest/)
+[![Pytest](https://img.shields.io/badge/-Pytest-464646?logo=Pytest)](https://docs.pytest.org/en/latest/)
 [![Pytest-asyncio](https://img.shields.io/badge/-Pytest--asyncio-464646?logo=Pytest-asyncio)](https://pypi.org/project/pytest-asyncio/)
-[![docker_hub](https://img.shields.io/badge/-Docker_Hub-464646?logo=docker)](https://hub.docker.com/)-->
+<!--[![docker_hub](https://img.shields.io/badge/-Docker_Hub-464646?logo=docker)](https://hub.docker.com/)-->
 
 [⬆️Оглавление](#оглавление)
 

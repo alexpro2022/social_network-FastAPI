@@ -56,25 +56,14 @@ def test_post_json_invalid_values():
     headers=get_headers(get_auth_user_token(AUTH_USER))
     for key in POST_PAYLOAD:
         invalid_payload = POST_PAYLOAD.copy()
-        for invalid_value in ([], (), {}):
+        for invalid_value in ([], (), {}, '', ' ', 'aaaaaaaaaaaa'):
             invalid_payload[key] = invalid_value
             assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
 
 
-'''def cargo_post_payload_invalid_zip_value():
-    msg = 'Локация не найдена - неверный location_id или zip-код.'
-    for invalid_zip in ('12345',):
-        for key in ('delivery_zip', 'current_zip'):
-            invalid_payload = POST_PAYLOAD.copy()
-            invalid_payload[key] = invalid_zip
-            response = assert_response(HTTPStatus.NOT_FOUND, POST, ENDPOINT, payload=invalid_payload)
-            assert response.json() == {'detail': msg}, response.json()
+def test_post_json_invalid_title_length():
+    headers=get_headers(get_auth_user_token(AUTH_USER))
+    invalid_payload = POST_PAYLOAD.copy()
+    invalid_payload['title'] = 'ab' * 50 + 'c'
+    assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
 
-
-def cargo_post_payload_invalid_zip_length():
-    for invalid_zip in ('', ' ', '1234', '123456'):
-        for key in ('delivery_zip', 'current_zip'):
-            invalid_payload = POST_PAYLOAD.copy()
-            invalid_payload[key] = invalid_zip
-            assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, payload=invalid_payload)
-'''
