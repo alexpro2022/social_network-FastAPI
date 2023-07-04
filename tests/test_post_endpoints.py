@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD
+from .fixtures.data import AUTH_USER, ENDPOINT, POST_PAYLOAD, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
 from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          assert_response,
                                          get_auth_user_token,
@@ -32,16 +32,17 @@ def test_authorized_user_can_create_post():
 
 
 def test_post_json_invalid_values():
+    empty, space, sequence = '', ' ', 'aaaaaaaaaaaa'
     headers=get_headers(get_auth_user_token(AUTH_USER))
     for key in POST_PAYLOAD:
         invalid_payload = POST_PAYLOAD.copy()
-        for invalid_value in ([], (), {}, '', ' ', 'aaaaaaaaaaaa'):
+        for invalid_value in ([], (), {}, empty, space, sequence):
             invalid_payload[key] = invalid_value
             response = assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
-            if invalid_value in ('', ' '):
-                assert response.json()['detail'][0]['msg'] == 'Поле не может быть пустой строкой или пробелом!'
-            if invalid_value == 'aaaaaaaaaaaa':
-                assert response.json()['detail'][0]['msg'] == 'Поле не может быть последовательностью одного символа!'
+            if invalid_value in (empty, space):
+                assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_1
+            if invalid_value == sequence:
+                assert response.json()['detail'][0]['msg'] == INVALID_FIELD_MSG_2
 
 
 def test_post_json_invalid_title_length():
