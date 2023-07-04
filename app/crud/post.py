@@ -43,7 +43,7 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         pass
 
     async def get_user_posts(
-        self, session: AsyncSession, user: User, exception: bool
+        self, session: AsyncSession, user: User, exception: bool = False
     ) -> list[Post] | None:
         return await self.get_all_by_attr(
             session, 'author_id', user.id, exception=exception)

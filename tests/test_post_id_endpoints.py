@@ -5,15 +5,15 @@ from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          assert_response,
                                          get_auth_user_token,
                                          get_headers,
-                                         invalid_methods_test,
+                                         not_allowed_methods_test,
                                          standard_tests)
 from .utils import check_created_post, check_updated_post, invalid_title_length, json_invalid_values, create_post
 
 ID = 1
 
 
-def test_invalid_methods():
-    invalid_methods_test((PATCH, POST), ENDPOINT, ID)
+def test_not_allowed_methods():
+    not_allowed_methods_test((PATCH, POST), ENDPOINT, ID)
 
 
 def test_unauthorized_user_can_get_post():

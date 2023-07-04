@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from .fixtures.data import ENDPOINT, AUTHOR, POST_PAYLOAD, PUT_PAYLOAD, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
-from .fixtures.endpoints_testlib import assert_response, get_auth_user_token, get_headers, client, PUT
+from .fixtures.endpoints_testlib import assert_response, get_auth_user_token, get_headers, client, PUT, DONE
 
 
 def check_post(response_json: dict, payload: dict, user: dict, updated: bool = False) -> str:
@@ -22,15 +22,19 @@ def check_post(response_json: dict, payload: dict, user: dict, updated: bool = F
     assert author['is_active'] == True
     assert author['is_superuser'] == False
     assert author['is_verified'] == False        
-    return 'DONE'
+    return DONE
 
 
-def check_created_post(response_json: dict):
+def check_created_post(response_json: dict) -> str:
     return check_post(response_json, POST_PAYLOAD, AUTHOR)
 
 
-def check_updated_post(response_json: dict):
+def check_updated_post(response_json: dict) -> str:
     return check_post(response_json, PUT_PAYLOAD, AUTHOR, updated=True)
+
+
+def check_my_posts(response_json: list) -> str:
+    return check_post(response_json[0], POST_PAYLOAD, AUTHOR)
 
 
 def invalid_title_length(headers, method, payload: dict):

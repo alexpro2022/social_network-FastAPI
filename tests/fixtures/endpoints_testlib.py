@@ -217,7 +217,7 @@ def standard_tests(
 
 
 
-def invalid_methods_test(
+def not_allowed_methods_test(
     invalid_methods: tuple[str],
     endpoint: str,
     path_param: int | str | None = None,
