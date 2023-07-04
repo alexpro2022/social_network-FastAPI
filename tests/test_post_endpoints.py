@@ -6,7 +6,7 @@ from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
                                          get_auth_user_token,
                                          get_headers,
                                          invalid_methods_test,
-                                         valid_values_standard_tests)
+                                         standard_tests)
 from .utils import check_created_post
 
 
@@ -15,7 +15,7 @@ def test_unauthorized_user_can_get_posts():
         assert response_json == []
         return 'DONE'
     
-    valid_values_standard_tests(GET, ENDPOINT, func_check_valid_response=empty_list)
+    standard_tests(GET, ENDPOINT, func_check_valid_response=empty_list)
 
 
 def test_invalid_methods():
@@ -28,7 +28,7 @@ def test_unauthorized_user_cannot_create_post():
 
 def test_authorized_user_can_create_post():
     headers=get_headers(get_auth_user_token(AUTH_USER))
-    valid_values_standard_tests(POST, ENDPOINT, json=POST_PAYLOAD, headers=headers, func_check_valid_response=check_created_post)
+    standard_tests(POST, ENDPOINT, json=POST_PAYLOAD, headers=headers, func_check_valid_response=check_created_post)
 
 
 def test_post_json_invalid_values():

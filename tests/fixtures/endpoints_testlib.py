@@ -20,6 +20,7 @@ POST = 'POST'
 PUT = 'PUT'
 PATCH = 'PATCH'
 DELETE = 'DELETE'
+DONE = 'DONE'
 
 
 def get_registered(user: dict) -> None:
@@ -143,10 +144,10 @@ def assert_response(
 
 
 def __dummy_func(response_json) -> str:
-    return 'DONE'
+    return DONE
 
 
-def valid_values_standard_tests(
+def standard_tests(
     method: str,
     endpoint: str,
     *,
@@ -173,7 +174,7 @@ def valid_values_standard_tests(
             assert_response(HTTPStatus.NOT_FOUND, method, endpoint, path_param=path_param, params=params, json=json, data=data, headers=headers)
     if func_check_valid_response is None:
         func_check_valid_response = __dummy_func
-    assert func_check_valid_response(response.json()) == 'DONE'
+    assert func_check_valid_response(response.json()) == DONE
 
     # invalid_endpoint_test
     for invalid_endpoint in get_invalid(endpoint):
