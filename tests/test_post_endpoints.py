@@ -58,12 +58,14 @@ def test_post_json_invalid_values():
         invalid_payload = POST_PAYLOAD.copy()
         for invalid_value in ([], (), {}, '', ' ', 'aaaaaaaaaaaa'):
             invalid_payload[key] = invalid_value
-            assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
-
+            response = assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
+            if invalid_value in ('', ' '):
+                assert response.json()['detail'][0]['msg'] == 'Поле не может быть пустой строкой или пробелом!'
+            if invalid_value == 'aaaaaaaaaaaa':
+                assert response.json()['detail'][0]['msg'] == 'Поле не может быть последовательностью одного символа!'
 
 def test_post_json_invalid_title_length():
     headers=get_headers(get_auth_user_token(AUTH_USER))
     invalid_payload = POST_PAYLOAD.copy()
-    invalid_payload['title'] = 'ab' * 50 + 'c'
+    invalid_payload['title'] = 'a' * 100 + 'c'
     assert_response(HTTPStatus.UNPROCESSABLE_ENTITY, POST, ENDPOINT, json=invalid_payload, headers=headers)
-
