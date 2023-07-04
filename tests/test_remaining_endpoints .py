@@ -18,23 +18,28 @@ ID = 1
 
 
 @pytest.mark.parametrize('case', (
-    (MY_POSTS_ENDPOINT, None),
-    (LIKE_ENDPOINT, ID),
-    (DISLIKE_ENDPOINT, ID),        
+    ((DELETE, PATCH, POST, PUT), MY_POSTS_ENDPOINT, None),
+    ((DELETE, PATCH, POST, PUT), LIKE_ENDPOINT, ID),
+    ((DELETE, PATCH, POST, PUT), DISLIKE_ENDPOINT, ID),
+    ((PUT, PATCH, DELETE), ENDPOINT, None),
+    ((PATCH, POST), ENDPOINT, ID),
 ))
 def test_not_allowed_methods(case: tuple):
-    endpoint, path_param = case
-    not_allowed_methods_test((DELETE, PATCH, POST, PUT), endpoint, path_param)
+    not_allowed_methods, endpoint, path_param = case
+    not_allowed_methods_test(not_allowed_methods, endpoint, path_param)
 
 
 @pytest.mark.parametrize('case', (
-    (MY_POSTS_ENDPOINT, None),
-    (LIKE_ENDPOINT, ID),
-    (DISLIKE_ENDPOINT, ID),    
+    (GET, MY_POSTS_ENDPOINT, None),
+    (GET, LIKE_ENDPOINT, ID),
+    (GET, DISLIKE_ENDPOINT, ID),
+    (POST, ENDPOINT, None),
+    (PUT, ENDPOINT, ID),
+    (DELETE, ENDPOINT, ID),
 ))
-def test_unauthorized_user_cannot_get(case: tuple):
-    endpoint, path_param = case
-    assert_response(HTTPStatus.UNAUTHORIZED, GET, endpoint, path_param=path_param)
+def test_unauthorized_user_cannot_access(case: tuple):
+    method, endpoint, path_param = case
+    assert_response(HTTPStatus.UNAUTHORIZED, method, endpoint, path_param=path_param)
 
 
 def test_author_can_get_his_posts():
