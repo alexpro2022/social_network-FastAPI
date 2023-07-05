@@ -137,3 +137,20 @@ def test_allowed_methods(user, method, endpoint, post_id, payload, func, msg):
 def test_json_invalid_values(method, payload, test_func):
     headers = get_headers(get_auth_user_token(AUTHOR)) if method is POST else create_post()
     test_func(method, payload, headers)
+
+
+# === AUTHORIZED USER ADMIN ===
+'''@pytest.mark.parametrize('method, endpoint, post_id', (
+    (GET, ENDPOINT, None),
+    (POST, ENDPOINT, None),    
+    (GET, ENDPOINT, ID),       
+    (PUT, ENDPOINT, ID),
+    (DELETE, ENDPOINT, ID),
+    (GET, LIKE_ENDPOINT, ID),
+    (GET, DISLIKE_ENDPOINT, ID),
+    (GET, MY_POSTS_ENDPOINT, None),    
+))
+def test_admin_access(superuser_client, method, endpoint, post_id):
+    create_post()
+    #headers = get_headers(get_auth_user_token(ADMIN))
+    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD, _client=superuser_client)'''
