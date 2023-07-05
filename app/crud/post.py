@@ -18,9 +18,7 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         'Запрещено ставить LIKE/DISLIKE собственным постам.')
 
     def __is_admin(self, user: User) -> bool:
-        # return user.is_superuser
-        res = user.email.find('admin')
-        return False if res == -1 else True
+        return user.is_superuser
 
     def perform_create(self, create_data: dict, user: User) -> None:
         """Adds the author to the post record."""
