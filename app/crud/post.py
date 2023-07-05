@@ -14,10 +14,11 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
     OBJECT_ALREADY_EXISTS = 'Пост с таким заголовком уже существует.'
     NOT_FOUND = 'Пост(ы) не найден(ы).'
     PERMISSION_DENIED = 'У вас нет права доступа к данному посту.'
-    SELF_LIKE_DISLIKE_DENIED = 'Запрещено ставить LIKE/DISLIKE собственным постам.'
+    SELF_LIKE_DISLIKE_DENIED = (
+        'Запрещено ставить LIKE/DISLIKE собственным постам.')
 
     def __is_admin(self, user: User) -> bool:
-        #return user.is_superuser
+        # return user.is_superuser
         res = user.email.find('admin')
         return False if res == -1 else True
 
