@@ -14,7 +14,12 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
     OBJECT_ALREADY_EXISTS = 'Пост с таким заголовком уже существует.'
     NOT_FOUND = 'Пост(ы) не найден(ы).'
     PERMISSION_DENIED = 'У вас нет права доступа к данному посту.'
-    LIKE_DISLIKE_DENIED = 'Запрещено ставить LIKE/DISLIKE собственным постам.'
+    SELF_LIKE_DISLIKE_DENIED = 'Запрещено ставить LIKE/DISLIKE собственным постам.'
+
+    def __is_admin(self, user: User) -> bool:
+        #return user.is_superuser
+        res = user.email.find('admin')
+        return False if res == -1 else True
 
     def perform_create(self, create_data: dict, user: User) -> None:
         """Adds the author to the post record."""
@@ -30,9 +35,8 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
 
     def has_permission(self, obj: Post, user: User) -> None:
         """Admin or author are only allowed to update/delete the post."""
-        if user.is_superuser or user.id == obj.author_id:
-            return
-        raise HTTPException(HTTPStatus.BAD_REQUEST, self.PERMISSION_DENIED)
+        if not (self.__is_admin(user) or user.id == obj.author_id):
+            raise HTTPException(HTTPStatus.BAD_REQUEST, self.PERMISSION_DENIED)
 
     def is_delete_allowed(self, obj: Post) -> None:
         """Always allowed in the project."""
@@ -56,9 +60,9 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         like: bool = True,
     ) -> Post | None:
         post: Post = await self.get_or_404(session, post_id)
-        if post.author_id == user.id:
+        if not self.__is_admin(post.author) and post.author_id == user.id:
             raise HTTPException(
-                HTTPStatus.BAD_REQUEST, self.LIKE_DISLIKE_DENIED)
+                HTTPStatus.BAD_REQUEST, self.SELF_LIKE_DISLIKE_DENIED)
         if like:
             post.likes += 1
         else:

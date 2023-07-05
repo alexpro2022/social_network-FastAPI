@@ -1,8 +1,8 @@
 from http import HTTPStatus
 import pytest
 
-from .fixtures.data import AUTH_USER, ENDPOINT, PUT_PAYLOAD, POST_NOT_FOUND_MSG, NO_PERMISSION_MSG
-from .fixtures.endpoints_testlib import (DELETE, GET, PUT,
+from .fixtures.data import AUTHOR, AUTH_USER, ENDPOINT, PUT_PAYLOAD, POST_PAYLOAD, NO_PERMISSION_MSG
+from .fixtures.endpoints_testlib import (DELETE, POST, PUT, 
                                          assert_response,
                                          get_auth_user_token,
                                          get_headers,
@@ -11,11 +11,10 @@ from .utils import check_created_post, check_updated_post, invalid_title_length,
 
 ID = 1
 
-
-def test_unauthorized_user_can_get_post():
-    create_post()
-    standard_tests(
-        GET, ENDPOINT, path_param=ID, func_check_valid_response=check_created_post, msg_invalid_path_param=POST_NOT_FOUND_MSG)
+def test_post_json_invalid_values():
+    headers=get_headers(get_auth_user_token(AUTHOR))
+    json_invalid_values(headers, POST, POST_PAYLOAD)
+    invalid_title_length(headers, POST, POST_PAYLOAD)
 
 
 @pytest.mark.parametrize('method', (PUT, DELETE))

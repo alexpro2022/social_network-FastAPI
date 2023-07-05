@@ -30,16 +30,16 @@ def check_post(response_json: dict, payload: dict, user: dict, updated: bool = F
     return DONE
 
 
+def check_posts(response_json: list) -> str:
+    return check_post(response_json[0], POST_PAYLOAD, AUTHOR)
+
+
 def check_created_post(response_json: dict) -> str:
     return check_post(response_json, POST_PAYLOAD, AUTHOR)
 
 
 def check_updated_post(response_json: dict) -> str:
     return check_post(response_json, PUT_PAYLOAD, AUTHOR, updated=True)
-
-
-def check_my_posts(response_json: list) -> str:
-    return check_post(response_json[0], POST_PAYLOAD, AUTHOR)
 
 
 def check_liked_post(response_json: dict) -> str:
