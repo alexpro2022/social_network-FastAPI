@@ -215,10 +215,12 @@ def get_registered(user: dict) -> None:
     assert auth_user['is_verified'] == False
 
 
-def get_auth_user_token(user: dict | None) -> str | None:
+def get_auth_user_token(user: dict | None, registration: bool = True) -> str | None:
     if user is None:
         return None
-    get_registered(user) 
+    if registration:
+        get_registered(user)
+    user = user.copy()
     user['username'] = user['email']
     response = client.post('/auth/jwt/login', data=user)
     assert_status(response, HTTPStatus.OK)

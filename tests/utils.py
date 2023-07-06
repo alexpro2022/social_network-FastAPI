@@ -11,11 +11,11 @@ def empty_list(response_json: list) -> str:
     return DONE
 
 
-def create_post(user: dict = AUTHOR, headers: dict[str:str] | None = None) -> dict[str:str]:
-    if headers is None:
-        headers = get_headers(get_auth_user_token(user))
-    client.post(ENDPOINT, headers=headers, json=POST_PAYLOAD)
-    return headers
+def create_post(user: dict = AUTHOR, post_author_headers: dict[str:str] | None = None) -> dict[str:str]:
+    if post_author_headers is None:
+        post_author_headers = get_headers(get_auth_user_token(user))
+    client.post(ENDPOINT, headers=post_author_headers, json=POST_PAYLOAD)
+    return post_author_headers
 
 
 def check_post(response_json: dict, payload: dict, user: dict = AUTHOR, updated: bool = False, likes: int = 0, dislikes: int = 0) -> str:

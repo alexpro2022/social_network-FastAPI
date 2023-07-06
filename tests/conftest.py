@@ -20,11 +20,19 @@ except (NameError, ImportError):
         '`app.core.db`.')
 
 try:
+    from app.core.init_db import create_user
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не обнаружен объект `create_user`.'
+        'Проверьте и поправьте: он должен быть доступен в модуле '
+        '`app.code.init_db`')
+
+try:
     from app.core.user import current_user
 except (NameError, ImportError):
     raise AssertionError(
-        'Не обнаружены объекты `current_superuser, current_user`.'
-        'Проверьте и поправьте: они должны быть доступны в модуле '
+        'Не обнаружен объект `current_user`.'
+        'Проверьте и поправьте: он должен быть доступен в модуле '
         '`app.code.user`')
 
 try:
@@ -43,6 +51,7 @@ except (NameError, ImportError):
         'Проверьте и поправьте: она должна быть доступна в модуле '
         '`app.models.user`.')
 
+from .fixtures.data import ADMIN
 from .utils import create_post
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -69,6 +78,7 @@ app.dependency_overrides[get_async_session] = override_get_async_session
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await create_user(**ADMIN, is_superuser=True)
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

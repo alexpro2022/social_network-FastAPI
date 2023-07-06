@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 
-from .fixtures.data import (AUTH_USER, AUTHOR, DISLIKE_ENDPOINT,
+from .fixtures.data import (ADMIN, AUTH_USER, AUTHOR, DISLIKE_ENDPOINT,
                             ENDPOINT, ID, LIKE_ENDPOINT, MY_POSTS_ENDPOINT,
                             NO_PERMISSION_MSG, NO_SELF_LIKE_DISLIKE_MSG,
                             POST_NOT_FOUND_MSG, POST_PAYLOAD, PUT_PAYLOAD)
@@ -46,8 +46,8 @@ def test_unauthorized_user_no_access(method, endpoint, post_id):
     (GET, DISLIKE_ENDPOINT, ID),      
 ))
 def test_authorized_not_author_access(new_post, method, endpoint, post_id):
-    headers = get_headers(get_auth_user_token(AUTH_USER))
-    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=headers, json=PUT_PAYLOAD)
+    user_headers = get_headers(get_auth_user_token(AUTH_USER))
+    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=user_headers, json=PUT_PAYLOAD)
 
 
 @pytest.mark.parametrize('method, endpoint, post_id', (
@@ -55,8 +55,8 @@ def test_authorized_not_author_access(new_post, method, endpoint, post_id):
     (DELETE, ENDPOINT, ID),
 ))
 def test_authorized_not_author_no_access(new_post, method, endpoint, post_id):
-    headers = get_headers(get_auth_user_token(AUTH_USER))
-    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=headers, json=PUT_PAYLOAD)
+    user_headers = get_headers(get_auth_user_token(AUTH_USER))
+    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=user_headers, json=PUT_PAYLOAD)
     assert_msg(r, NO_PERMISSION_MSG)
 
 
@@ -70,8 +70,8 @@ def test_authorized_not_author_no_access(new_post, method, endpoint, post_id):
     (DELETE, ENDPOINT, ID),
 ))
 def test_author_access(method, endpoint, post_id):
-    headers = create_post()
-    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=headers, json=PUT_PAYLOAD)
+    author_headers = create_post()
+    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=author_headers, json=PUT_PAYLOAD)
 
 
 @pytest.mark.parametrize('method, endpoint, post_id', (
@@ -79,8 +79,8 @@ def test_author_access(method, endpoint, post_id):
     (GET, DISLIKE_ENDPOINT, ID),
 ))
 def test_author_no_access(method, endpoint, post_id):
-    headers = create_post()
-    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=headers)
+    author_headers = create_post()
+    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=author_headers)
     assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
 
 
@@ -133,7 +133,7 @@ def test_not_allowed_methods(not_allowed_methods, endpoint, post_id ):
 def test_allowed_methods(user, method, endpoint, post_id, payload, func, msg):
     headers = get_headers(get_auth_user_token(user)) 
     if method is not POST:
-        create_post(headers=headers) if user is AUTHOR else create_post()
+        create_post(post_author_headers=headers) if user is AUTHOR else create_post()
     json_optional = True if method is PUT else False
     standard_tests(method, endpoint, path_param=post_id, headers=headers, json=payload, json_optional=json_optional, func_check_valid_response=func, msg_invalid_path_param=msg)
 
