@@ -1,7 +1,9 @@
 from http import HTTPStatus
 
-from .fixtures.data import ENDPOINT, AUTHOR, POST_PAYLOAD, PUT_PAYLOAD, INVALID_FIELD_MSG_1, INVALID_FIELD_MSG_2
-from .fixtures.endpoints_testlib import assert_response, get_auth_user_token, get_headers, client, PUT, DONE
+from .fixtures.data import (AUTHOR, ENDPOINT, INVALID_FIELD_MSG_1,
+                            INVALID_FIELD_MSG_2, POST_PAYLOAD, PUT_PAYLOAD)
+from .fixtures.endpoints_testlib import (DONE, PUT, assert_response, client,
+                                         get_auth_user_token, get_headers)
 
 
 def empty_list(response_json: list) -> str:

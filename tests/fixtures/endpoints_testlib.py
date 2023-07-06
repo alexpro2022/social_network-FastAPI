@@ -1,8 +1,8 @@
 from http import HTTPStatus
 from typing import Any, TypeAlias
 
-from httpx import Response
 from fastapi.testclient import TestClient
+from httpx import Response
 
 from app.main import app
 
@@ -218,7 +218,7 @@ def get_registered(user: dict) -> None:
 def get_auth_user_token(user: dict | None) -> str | None:
     if user is None:
         return None
-    get_registered(user)
+    get_registered(user) 
     user['username'] = user['email']
     response = client.post('/auth/jwt/login', data=user)
     assert_status(response, HTTPStatus.OK)

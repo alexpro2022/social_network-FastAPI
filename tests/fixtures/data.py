@@ -9,7 +9,6 @@ NO_SELF_LIKE_DISLIKE_MSG = 'Запрещено ставить LIKE/DISLIKE со�
 # Users
 AUTH_USER = {"email": "testuser@example.com", "password": "testpass"}
 AUTHOR = {"email": "author@example.com", "password": "author"}
-ADMIN = {"email": "admin@example.com", "password": "admin"}
 POST_PAYLOAD = {"title": "POST New post title.", "content": "POST New post content."}
 PUT_PAYLOAD = {"title": "update for title.",  "content": "update for content."}
 

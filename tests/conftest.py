@@ -73,16 +73,13 @@ async def init_db():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-superuser = User(
-    id=1,
-    is_active=True,
-    is_verified=True,
-    is_superuser=True,
-)
-
-
 @pytest.fixture
 def superuser_client():
-    app.dependency_overrides[current_superuser] = lambda: superuser
-    with TestClient(app) as client:
-        yield client
+    app.dependency_overrides[current_user] = lambda: User(
+        id=1,
+        is_active=True,
+        is_verified=True,
+        is_superuser=True,
+    )
+    yield
+    app.dependency_overrides[current_user] = current_user

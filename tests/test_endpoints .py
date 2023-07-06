@@ -1,27 +1,18 @@
 from http import HTTPStatus
+
 import pytest
 
-from .fixtures.data import (ENDPOINT, ID, 
-                            MY_POSTS_ENDPOINT, 
-                            LIKE_ENDPOINT, DISLIKE_ENDPOINT, 
-                            AUTH_USER, PUT_PAYLOAD, NO_PERMISSION_MSG, 
-                            NO_SELF_LIKE_DISLIKE_MSG, ADMIN, POST_PAYLOAD,
-                            POST_NOT_FOUND_MSG, AUTHOR)
-
+from .fixtures.data import (AUTH_USER, AUTHOR, DISLIKE_ENDPOINT,
+                            ENDPOINT, ID, LIKE_ENDPOINT, MY_POSTS_ENDPOINT,
+                            NO_PERMISSION_MSG, NO_SELF_LIKE_DISLIKE_MSG,
+                            POST_NOT_FOUND_MSG, POST_PAYLOAD, PUT_PAYLOAD)
 from .fixtures.endpoints_testlib import (DELETE, GET, PATCH, POST, PUT,
-                                         assert_response,
-                                         assert_msg,
-                                         get_auth_user_token,
-                                         get_headers,
+                                         assert_msg, assert_response,
+                                         get_auth_user_token, get_headers,
                                          standard_tests)
-from .utils import (create_post,
-                    check_posts,
-                    check_liked_post,
-                    check_disliked_post,
-                    check_created_post,
-                    invalid_title_length,
-                    json_invalid_values,
-                    check_updated_post)
+from .utils import (check_created_post, check_disliked_post, check_liked_post,
+                    check_posts, check_updated_post, create_post, empty_list,
+                    invalid_title_length, json_invalid_values)
 
 
 # === UNAUTHORIZED USER ===
@@ -34,7 +25,7 @@ def test_unauthorized_user_access(method, endpoint, post_id) -> None:
     assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id)
 
 
-@pytest.mark.parametrize('method, endpoint, path_param', (
+@pytest.mark.parametrize('method, endpoint, post_id', (
     (POST, ENDPOINT, None),
     (PUT, ENDPOINT, ID),
     (DELETE, ENDPOINT, ID),
@@ -42,8 +33,8 @@ def test_unauthorized_user_access(method, endpoint, post_id) -> None:
     (GET, LIKE_ENDPOINT, ID),
     (GET, DISLIKE_ENDPOINT, ID),    
 ))
-def test_unauthorized_user_no_access(method, endpoint, path_param):
-    assert_response(HTTPStatus.UNAUTHORIZED, method, endpoint, path_param=path_param)
+def test_unauthorized_user_no_access(method, endpoint, post_id):
+    assert_response(HTTPStatus.UNAUTHORIZED, method, endpoint, path_param=post_id)
 
 
 # === AUTHORIZED USER NOT AUTHOR ===
@@ -96,6 +87,30 @@ def test_author_no_access(method, endpoint, post_id):
     assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
 
 
+# === AUTHORIZED USER ADMIN ===
+@pytest.mark.parametrize('method, endpoint, post_id', (
+    (GET, ENDPOINT, None),
+    (POST, ENDPOINT, None),    
+    (GET, ENDPOINT, ID),       
+    (PUT, ENDPOINT, ID),
+    (DELETE, ENDPOINT, ID),
+    (GET, MY_POSTS_ENDPOINT, None),    
+))
+def test_admin_access(superuser_client, method, endpoint, post_id):
+    create_post()
+    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)  # , _client=superuser_client)
+
+
+@pytest.mark.parametrize('method, endpoint, post_id', (
+    (GET, LIKE_ENDPOINT, ID),
+    (GET, DISLIKE_ENDPOINT, ID),   
+))
+def test_admin_no_access(superuser_client, method, endpoint, post_id):
+    create_post()
+    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)  # , _client=superuser_client)
+    assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
+
+
 # === METHODS ===
 @pytest.mark.parametrize('not_allowed_methods, endpoint, post_id ', (
     ((PUT, PATCH, DELETE), ENDPOINT, None),
@@ -117,7 +132,8 @@ def test_not_allowed_methods(not_allowed_methods, endpoint, post_id ):
     (AUTHOR, DELETE, ENDPOINT, ID, None, check_created_post, POST_NOT_FOUND_MSG),
     (AUTH_USER, GET, LIKE_ENDPOINT, ID, None, check_liked_post, POST_NOT_FOUND_MSG),
     (AUTH_USER, GET, DISLIKE_ENDPOINT, ID, None, check_disliked_post, POST_NOT_FOUND_MSG),
-    (AUTHOR, GET, MY_POSTS_ENDPOINT, None, None, check_posts, None),        
+    (AUTHOR, GET, MY_POSTS_ENDPOINT, None, None, check_posts, None),
+    (AUTH_USER, GET, MY_POSTS_ENDPOINT, None, None, empty_list, None),        
 ))
 def test_allowed_methods(user, method, endpoint, post_id, payload, func, msg):
     headers = get_headers(get_auth_user_token(user)) 
@@ -137,20 +153,3 @@ def test_allowed_methods(user, method, endpoint, post_id, payload, func, msg):
 def test_json_invalid_values(method, payload, test_func):
     headers = get_headers(get_auth_user_token(AUTHOR)) if method is POST else create_post()
     test_func(method, payload, headers)
-
-
-# === AUTHORIZED USER ADMIN ===
-'''@pytest.mark.parametrize('method, endpoint, post_id', (
-    (GET, ENDPOINT, None),
-    (POST, ENDPOINT, None),    
-    (GET, ENDPOINT, ID),       
-    (PUT, ENDPOINT, ID),
-    (DELETE, ENDPOINT, ID),
-    (GET, LIKE_ENDPOINT, ID),
-    (GET, DISLIKE_ENDPOINT, ID),
-    (GET, MY_POSTS_ENDPOINT, None),    
-))
-def test_admin_access(superuser_client, method, endpoint, post_id):
-    create_post()
-    #headers = get_headers(get_auth_user_token(ADMIN))
-    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD, _client=superuser_client)'''
