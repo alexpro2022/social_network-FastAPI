@@ -1,6 +1,6 @@
 # Проект social_network-FastAPI: 
 
-[![Test Suite](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main%20copy.yml/badge.svg)](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main%20copy.yml)
+[![Test Suite](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main.yml/badge.svg)](https://github.com/alexpro2022/social_network-FastAPI/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/alexpro2022/social_network-FastAPI/branch/main/graph/badge.svg?token=FfeaO0NLzk)](https://codecov.io/gh/alexpro2022/social_network-FastAPI)
 
 ### Simple RESTful API using FastAPI for a social networking application
