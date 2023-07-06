@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 
-from .fixtures.data import (ADMIN, AUTH_USER, AUTHOR, DISLIKE_ENDPOINT,
+from .fixtures.data import (AUTH_USER, AUTHOR, DISLIKE_ENDPOINT,
                             ENDPOINT, ID, LIKE_ENDPOINT, MY_POSTS_ENDPOINT,
                             NO_PERMISSION_MSG, NO_SELF_LIKE_DISLIKE_MSG,
                             POST_NOT_FOUND_MSG, POST_PAYLOAD, PUT_PAYLOAD)
