@@ -57,6 +57,18 @@ except (NameError, ImportError):
     raise AssertionError(
         'Не найден объект `CRUDBase`. Он должен находиться в модуле `app.crud.base`')
 
+try:
+    from app.models.post import Post
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не найден объект `Post`. Он должен находиться в модуле `app.crud.post`')
+
+try:
+    from app.crud.post import PostCRUD
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не найден объект `PostCRUD`. Он должен находиться в модуле `app.post.base`')
+
 from .utils import create_post
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -106,5 +118,5 @@ def new_post():
 
 
 @pytest.fixture
-def get_crud_class():
-    pass
+def get_crud_base():
+    yield CRUDBase(Post)
