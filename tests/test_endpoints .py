@@ -98,7 +98,7 @@ def test_author_no_access(method, endpoint, post_id):
 ))
 def test_admin_access(superuser_client, method, endpoint, post_id):
     create_post()
-    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)  # , _client=superuser_client)
+    assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)
 
 
 @pytest.mark.parametrize('method, endpoint, post_id', (
@@ -107,7 +107,7 @@ def test_admin_access(superuser_client, method, endpoint, post_id):
 ))
 def test_admin_no_access(superuser_client, method, endpoint, post_id):
     create_post()
-    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)  # , _client=superuser_client)
+    r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)
     assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
 
 
