@@ -51,6 +51,12 @@ except (NameError, ImportError):
         'Проверьте и поправьте: она должна быть доступна в модуле '
         '`app.models.user`.')
 
+try:
+    from app.crud.base import CRUDBase
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не найден объект `CRUDBase`. Он должен находиться в модуле `app.crud.base`')
+
 from .utils import create_post
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -96,4 +102,9 @@ def superuser_client():
 
 @pytest.fixture
 def new_post():
-    return create_post()
+    yield create_post()
+
+
+@pytest.fixture
+def get_crud_class():
+    pass

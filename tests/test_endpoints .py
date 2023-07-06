@@ -69,8 +69,8 @@ def test_authorized_not_author_no_access(new_post, method, endpoint, post_id):
     (PUT, ENDPOINT, ID),
     (DELETE, ENDPOINT, ID),
 ))
-def test_author_access(method, endpoint, post_id):
-    author_headers = create_post()
+def test_author_access(new_post, method, endpoint, post_id):
+    author_headers = new_post
     assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=author_headers, json=PUT_PAYLOAD)
 
 
@@ -78,8 +78,8 @@ def test_author_access(method, endpoint, post_id):
     (GET, LIKE_ENDPOINT, ID),
     (GET, DISLIKE_ENDPOINT, ID),
 ))
-def test_author_no_access(method, endpoint, post_id):
-    author_headers = create_post()
+def test_author_no_access(new_post, method, endpoint, post_id):
+    author_headers = new_post
     r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=author_headers)
     assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
 
