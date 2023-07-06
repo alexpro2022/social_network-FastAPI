@@ -20,8 +20,7 @@ from .utils import (check_created_post, check_disliked_post, check_liked_post,
     (GET, ENDPOINT, None),
     (GET, ENDPOINT, ID),
 ))
-def test_unauthorized_user_access(method, endpoint, post_id) -> None:
-    create_post()
+def test_unauthorized_user_access(new_post, method, endpoint, post_id) -> None:
     assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id)
 
 
@@ -46,8 +45,7 @@ def test_unauthorized_user_no_access(method, endpoint, post_id):
     (GET, LIKE_ENDPOINT, ID),
     (GET, DISLIKE_ENDPOINT, ID),      
 ))
-def test_authorized_not_author_access(method, endpoint, post_id):
-    create_post()
+def test_authorized_not_author_access(new_post, method, endpoint, post_id):
     headers = get_headers(get_auth_user_token(AUTH_USER))
     assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, headers=headers, json=PUT_PAYLOAD)
 
@@ -56,8 +54,7 @@ def test_authorized_not_author_access(method, endpoint, post_id):
     (PUT, ENDPOINT, ID),
     (DELETE, ENDPOINT, ID),
 ))
-def test_authorized_not_author_no_access(method, endpoint, post_id):
-    create_post()
+def test_authorized_not_author_no_access(new_post, method, endpoint, post_id):
     headers = get_headers(get_auth_user_token(AUTH_USER))
     r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, headers=headers, json=PUT_PAYLOAD)
     assert_msg(r, NO_PERMISSION_MSG)
@@ -96,8 +93,7 @@ def test_author_no_access(method, endpoint, post_id):
     (DELETE, ENDPOINT, ID),
     (GET, MY_POSTS_ENDPOINT, None),    
 ))
-def test_admin_access(superuser_client, method, endpoint, post_id):
-    create_post()
+def test_admin_access(new_post, superuser_client, method, endpoint, post_id):
     assert_response(HTTPStatus.OK, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)
 
 
@@ -105,8 +101,7 @@ def test_admin_access(superuser_client, method, endpoint, post_id):
     (GET, LIKE_ENDPOINT, ID),
     (GET, DISLIKE_ENDPOINT, ID),   
 ))
-def test_admin_no_access(superuser_client, method, endpoint, post_id):
-    create_post()
+def test_admin_no_access(new_post, superuser_client, method, endpoint, post_id):
     r = assert_response(HTTPStatus.BAD_REQUEST, method, endpoint, path_param=post_id, json=PUT_PAYLOAD)
     assert_msg(r, NO_SELF_LIKE_DISLIKE_MSG)
 

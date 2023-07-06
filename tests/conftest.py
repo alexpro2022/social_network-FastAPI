@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 try:
@@ -21,7 +20,7 @@ except (NameError, ImportError):
         '`app.core.db`.')
 
 try:
-    from app.core.user import current_superuser, current_user  # noqa
+    from app.core.user import current_user
 except (NameError, ImportError):
     raise AssertionError(
         'Не обнаружены объекты `current_superuser, current_user`.'
@@ -40,9 +39,11 @@ try:
     from app.models.user import User
 except (NameError, ImportError):
     raise AssertionError(
-        'Не обнаружена пользователя User. '
+        'Не обнаружена модель пользователя User. '
         'Проверьте и поправьте: она должна быть доступна в модуле '
         '`app.models.user`.')
+
+from .utils import create_post
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
@@ -83,3 +84,8 @@ def superuser_client():
     )
     yield
     app.dependency_overrides[current_user] = current_user
+
+
+@pytest.fixture
+def new_post():
+    return create_post()
