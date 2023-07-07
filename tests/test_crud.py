@@ -11,6 +11,15 @@ def __info(obj):
     assert obj == '', (f'\ntype = {type(obj)}\nvalue = {obj}')
 
 
+def __check_exc_info(exc_info, err, msg):
+    assert exc_info.value.args[0] == err
+    assert exc_info.value.args[1] == msg
+
+
+def __check_exc_info__not_found(exc_info):
+    __check_exc_info(exc_info, HTTPStatus.NOT_FOUND, 'Object(s) not found.')     
+
+
 def __check(post: Post):
     assert isinstance(post, Post)
     assert post.title == POST_SAVE_DATA['title']
@@ -47,18 +56,18 @@ async def test_save_exception(get_crud_base, get_test_session):
     with pytest.raises(HTTPException) as exc_info:
         for _ in range(2): 
             await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
-    assert exc_info.value.args[0] == HTTPStatus.BAD_REQUEST
-    assert exc_info.value.args[1] == 'Object with such a unique values already exists.'        
+    __check_exc_info(exc_info, HTTPStatus.BAD_REQUEST, 'Object with such a unique values already exists.')     
 
 
 @pytest.mark.parametrize('method_name', ('get_all_by_attr', 'get_by_attr'))
 async def test_not_found_exception(get_crud_base, get_test_session, method_name):
     method = __get_method(get_crud_base, method_name)
+    await method(get_test_session, 'title', 'title_value', exception=False)
     with pytest.raises(HTTPException) as exc_info:
         await method(get_test_session, 'title', 'title_value', exception=True)
-    assert exc_info.value.args[0] == HTTPStatus.NOT_FOUND
-    assert exc_info.value.args[1] == 'Object(s) not found.'
-    await method(get_test_session, 'title', 'title_value', exception=False)
+    __check_exc_info__not_found(exc_info)  
+
+    
 
 
 @pytest.mark.parametrize('method_name', ('get_all_by_attr', 'get_by_attr'))
@@ -68,8 +77,39 @@ async def test_get_by_attr(get_crud_base, get_test_session, method_name):
     result = await method(get_test_session, 'title', POST_SAVE_DATA['title'])
     match method_name:
         case 'get_all_by_attr':
-            post = result[0]
+            assert isinstance(result, list)
+            __check(result[0])
         case 'get_by_attr':
-            post = result
+            __check(result)
+
+
+async def test_get(get_crud_base, get_test_session):
+    method = get_crud_base.get
+    post = await method(get_test_session, 1)
+    assert post is None
+    await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
+    post = await method(get_test_session, 1)
     __check(post)
 
+
+async def test_get_or_404(get_crud_base, get_test_session):
+    method = get_crud_base.get_or_404
+    with pytest.raises(HTTPException) as exc_info:
+        await method(get_test_session, 1)
+    __check_exc_info__not_found(exc_info)  
+    await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
+    post = await method(get_test_session, 1)
+    __check(post)
+
+
+async def test_get_all(get_crud_base, get_test_session):
+    method = get_crud_base.get_all
+    posts = await method(get_test_session)
+    assert posts == []
+    with pytest.raises(HTTPException) as exc_info:
+        await method(get_test_session, exception=True)
+    __check_exc_info__not_found(exc_info)  
+    await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
+    posts = await method(get_test_session)
+    assert isinstance(posts, list)
+    __check(posts[0])
