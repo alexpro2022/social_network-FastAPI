@@ -6,6 +6,10 @@ from .fixtures.endpoints_testlib import (DONE, PUT, assert_response, client,
                                          get_auth_user_token, get_headers)
 
 
+def _info(obj):
+    assert obj == '', (f'\ntype = {type(obj)}\nvalue = {obj}')
+
+
 def empty_list(response_json: list) -> str:
     assert response_json == []
     return DONE
