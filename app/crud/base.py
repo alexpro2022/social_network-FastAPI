@@ -19,8 +19,8 @@ UpdateSchemaType = TypeVar('UpdateSchemaType', bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    OBJECT_ALREADY_EXISTS = 'Object with such a unique values already exists'
-    NOT_FOUND = 'Object(s) not found'
+    OBJECT_ALREADY_EXISTS = 'Object with such a unique values already exists.'
+    NOT_FOUND = 'Object(s) not found.'
 
     def __init__(self, model: Type[ModelType]) -> None:
         self.model = model

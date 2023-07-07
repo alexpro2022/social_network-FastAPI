@@ -88,6 +88,7 @@ async def override_get_async_session():
     async with TestingSessionLocal() as session:
         yield session
 
+
 app.dependency_overrides[get_async_session] = override_get_async_session
 
 
@@ -98,6 +99,12 @@ async def init_db():
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+
+@pytest_asyncio.fixture
+async def get_test_session():
+    async with TestingSessionLocal() as session:
+        yield session
 
 
 @pytest.fixture
