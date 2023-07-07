@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 
 try:
     from app.main import app
@@ -42,6 +42,14 @@ except (NameError, ImportError):
         'Не обнаружена схема создания пользователя UserCreate. '
         'Проверьте и поправьте: она должна быть доступна в модуле '
         '`app.schemas.user`.')
+
+try:
+    from app.schemas.post import PostCreate  # noqa
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не обнаружена схема создания пользователя PostCreate. '
+        'Проверьте и поправьте: она должна быть доступна в модуле '
+        '`app.schemas.post`.')
 
 try:
     from app.models.user import User
@@ -102,7 +110,7 @@ async def init_db():
 
 
 @pytest_asyncio.fixture
-async def get_test_session():
+async def get_test_session() -> AsyncSession:
     async with TestingSessionLocal() as session:
         yield session
 
@@ -125,5 +133,5 @@ def new_post():
 
 
 @pytest.fixture
-def get_crud_base():
+def get_crud_base() -> CRUDBase:
     yield CRUDBase(Post)
