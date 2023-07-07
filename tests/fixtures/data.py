@@ -9,7 +9,6 @@ NO_SELF_LIKE_DISLIKE_MSG = 'Запрещено ставить LIKE/DISLIKE со�
 # Users
 AUTH_USER = {"email": "testuser@example.com", "password": "testpass"}
 AUTHOR = {"email": "author@example.com", "password": "author"}
-# ADMIN = {"email": "admin@example.com", "password": "admin"}
 
 # Endpoints
 ENDPOINT = 'post'
@@ -19,4 +18,5 @@ DISLIKE_ENDPOINT = f'{ENDPOINT}/dislike'
 ID = 1
 
 POST_PAYLOAD = {"title": "POST New post title.", "content": "POST New post content."}
+POST_SAVE_DATA = {"title": "Another New post title.", "content": "POST New post content.", "author_id": 1}
 PUT_PAYLOAD = {"title": "update for title.",  "content": "update for content."}
