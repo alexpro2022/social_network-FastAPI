@@ -72,7 +72,7 @@ except (NameError, ImportError):
         'Не найден объект `Post`. Он должен находиться в модуле `app.crud.post`')
 
 try:
-    from app.crud.post import PostCRUD
+    from app.crud.post import PostCRUD  # noqa
 except (NameError, ImportError):
     raise AssertionError(
         'Не найден объект `PostCRUD`. Он должен находиться в модуле `app.post.base`')

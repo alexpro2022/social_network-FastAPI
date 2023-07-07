@@ -3,95 +3,92 @@ from http import HTTPStatus
 import pytest
 
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from .conftest import CRUDBase, Post, PostCreate, User
+from .conftest import Post, PostCreate, User
 from .fixtures.data import POST_PAYLOAD, POST_SAVE_DATA
 
-def __info(obj):
+def _info(obj):
     assert obj == '', (f'\ntype = {type(obj)}\nvalue = {obj}')
 
 
-def __check_exc_info(exc_info, err, msg):
-    assert exc_info.value.args[0] == err
-    assert exc_info.value.args[1] == msg
+def _check_exc_info(exc_info, err, msg):
+    for index, item in enumerate((err, msg)):
+        assert exc_info.value.args[index] == item
 
 
-def __check_exc_info__not_found(exc_info):
-    __check_exc_info(exc_info, HTTPStatus.NOT_FOUND, 'Object(s) not found.')     
+def _check_exc_info_not_found(exc_info):
+    _check_exc_info(exc_info, HTTPStatus.NOT_FOUND, 'Object(s) not found.')     
 
 
-def __check(post: Post):
+def _check(post: Post):
     assert isinstance(post, Post)
-    assert post.title == POST_SAVE_DATA['title']
-    assert post.content == POST_SAVE_DATA['content']
+    for item in ('title', 'content'):
+        assert getattr(post, item) == POST_SAVE_DATA[item]
     assert isinstance(post.created, dt)
     assert post.updated is None
     assert post.likes == 0
     assert post.dislikes == 0
 
 
-def __get_method(cls, method_name):
-    return cls.__getattribute__(method_name)          
+def _get_method(instance, method_name):
+    return instance.__getattribute__(method_name)          
 
 
 @pytest.mark.anyio
 async def test_save(get_crud_base, get_test_session):
     post = await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
-    __check(post)
+    _check(post)
 
 
 @pytest.mark.anyio
 async def test_save_exception(get_crud_base, get_test_session):
     with pytest.raises(HTTPException) as exc_info:
-        for _ in range(2): 
-            await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
-    __check_exc_info(exc_info, HTTPStatus.BAD_REQUEST, 'Object with such a unique values already exists.')     
+        [await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA)) for _ in range(2)]
+    _check_exc_info(exc_info, HTTPStatus.BAD_REQUEST, 'Object with such a unique values already exists.')     
 
 
 @pytest.mark.parametrize('method_name', ('get_all_by_attr', 'get_by_attr'))
 @pytest.mark.anyio
 async def test_not_found_exception(get_crud_base, get_test_session, method_name):
-    method = __get_method(get_crud_base, method_name)
-    await method(get_test_session, 'title', 'title_value', exception=False)
+    method = _get_method(get_crud_base, method_name)
+    args = (get_test_session, 'title', 'title_value')
+    post = await method(*args, exception=False)
+    assert post in (None, [])
     with pytest.raises(HTTPException) as exc_info:
-        await method(get_test_session, 'title', 'title_value', exception=True)
-    __check_exc_info__not_found(exc_info)  
+        await method(*args, exception=True)
+    _check_exc_info_not_found(exc_info)  
 
 
 @pytest.mark.parametrize('method_name', ('get_all_by_attr', 'get_by_attr'))
 @pytest.mark.anyio
-async def test_get_by_attr(get_crud_base, get_test_session, method_name):
-    method = __get_method(get_crud_base, method_name)
+async def test_get_by_(get_crud_base, get_test_session, method_name):
+    method = _get_method(get_crud_base, method_name)
     await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
     result = await method(get_test_session, 'title', POST_SAVE_DATA['title'])
-    match method_name:
-        case 'get_all_by_attr':
-            assert isinstance(result, list)
-            __check(result[0])
-        case 'get_by_attr':
-            __check(result)
+    _check(result) if method_name is 'get_by_attr' else _check(result[0])
 
 
 @pytest.mark.anyio
 async def test_get(get_crud_base, get_test_session):
     method = get_crud_base.get
-    post = await method(get_test_session, 1)
+    args = (get_test_session, 1)
+    post = await method(*args)
     assert post is None
     await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
-    post = await method(get_test_session, 1)
-    __check(post)
+    post = await method(*args)
+    _check(post)
 
 
 @pytest.mark.anyio
 async def test_get_or_404(get_crud_base, get_test_session):
     method = get_crud_base.get_or_404
+    args = (get_test_session, 1)
     with pytest.raises(HTTPException) as exc_info:
-        await method(get_test_session, 1)
-    __check_exc_info__not_found(exc_info)  
+        await method(*args)
+    _check_exc_info_not_found(exc_info)  
     await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
-    post = await method(get_test_session, 1)
-    __check(post)
+    post = await method(*args)
+    _check(post)
 
 
 @pytest.mark.anyio
@@ -101,11 +98,11 @@ async def test_get_all(get_crud_base, get_test_session):
     assert posts == []
     with pytest.raises(HTTPException) as exc_info:
         await method(get_test_session, exception=True)
-    __check_exc_info__not_found(exc_info)  
+    _check_exc_info_not_found(exc_info)  
     await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
     posts = await method(get_test_session)
     assert isinstance(posts, list)
-    __check(posts[0])
+    _check(posts[0])
 
 
 @pytest.mark.parametrize('method_name, args, expected_msg', (
@@ -117,15 +114,8 @@ async def test_get_all(get_crud_base, get_test_session):
 ))
 def test_not_implemented_exception(get_crud_base, method_name, args, expected_msg):
     with pytest.raises(NotImplementedError) as exc_info:
-        __get_method(get_crud_base, method_name)(*args)
+        _get_method(get_crud_base, method_name)(*args)
     assert exc_info.value.args[0] == expected_msg
-
-
-@pytest.mark.anyio
-async def test_create_raises_not_implemeted_exception(get_crud_base, get_test_session):
-    with pytest.raises(NotImplementedError) as exc_info:
-        await get_crud_base.create(get_test_session, PostCreate(**POST_PAYLOAD))
-    assert exc_info.value.args[0] == 'perform_create() must be implemented.'
 
 
 @pytest.mark.anyio
@@ -140,13 +130,13 @@ async def test_create_raises_not_implemeted_exception(get_crud_base, get_test_se
     ('delete', 'is_delete_allowed() must be implemented.', None),
 ))
 @pytest.mark.anyio
-async def test_func_raises_exceptions(get_crud_base: CRUDBase, get_test_session, method_name, expected_msg, payload):
-    method = __get_method(get_crud_base, method_name)
+async def test_func_raises_exceptions(get_crud_base, get_test_session, method_name, expected_msg, payload):
+    method = _get_method(get_crud_base, method_name)
     args = (1,) if payload is None else (1, payload) 
     # not found exception
     with pytest.raises(HTTPException) as exc_info:
         await method(get_test_session, *args)
-    __check_exc_info__not_found(exc_info)
+    _check_exc_info_not_found(exc_info)
     # create post for further testing
     await get_crud_base._save(get_test_session, Post(**POST_SAVE_DATA))
     # permissin exception
