@@ -7,9 +7,6 @@ from fastapi import HTTPException
 from .conftest import Post, PostCreate, User
 from .fixtures.data import POST_PAYLOAD, POST_SAVE_DATA
 
-def _info(obj):
-    assert obj == '', (f'\ntype = {type(obj)}\nvalue = {obj}')
-
 
 def _check_exc_info(exc_info, err, msg):
     for index, item in enumerate((err, msg)):
