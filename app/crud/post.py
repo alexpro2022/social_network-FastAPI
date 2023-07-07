@@ -59,7 +59,7 @@ class PostCRUD(CRUDBase[Post, PostCreate, PostUpdate]):
         like: bool = True,
     ) -> Post | None:
         post: Post = await self.get_or_404(session, post_id)
-        if not self.__is_admin(post.author) and post.author_id == user.id:
+        if post.author_id == user.id:
             raise HTTPException(
                 HTTPStatus.BAD_REQUEST, self.SELF_LIKE_DISLIKE_DENIED)
         if like:
