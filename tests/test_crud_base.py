@@ -28,7 +28,9 @@ def _check(post: Post):
 
 
 def _get_method(instance, method_name):
-    return instance.__getattribute__(method_name)          
+    method = instance.__getattribute__(method_name)
+    assert isinstance(method, type(instance.__init__))
+    return method          
 
 
 @pytest.mark.anyio

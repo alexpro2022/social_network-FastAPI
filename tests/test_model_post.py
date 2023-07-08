@@ -1,15 +1,17 @@
+from datetime import datetime as dt
 import pytest
 
-from .conftest import Post
+from .conftest import Post, User
 from .fixtures.data import POST_SAVE_DATA
 from .utils import _info
 
 
-@pytest.mark.parametrize('attr', (
-    'id', 'title', 'content', 'created', 'updated', 'likes', 'dislikes', 'author_id', 'author', '__repr__'
-))
-def test_model_attr(attr):
-    getattr(Post, attr)
+@pytest.mark.parametrize(
+    'attr_name,', ('id', 'title', 'content', 'created', 'updated',
+                   'likes', 'dislikes', 'author_id', 'author', '__repr__'))
+def test_model_attr(attr_name):
+    assert getattr(Post, attr_name, None) is not None
+
 
 
 def test_model_repr():
