@@ -1,7 +1,6 @@
-from datetime import datetime as dt
 import pytest
 
-from .conftest import Post, User
+from .conftest import Post
 from .fixtures.data import POST_SAVE_DATA
 from .utils import _info
 
@@ -15,7 +14,6 @@ def test_model_attr(attr_name):
 
 
 def test_model_repr():
-    representation = Post(**POST_SAVE_DATA).__repr__()
-    assert isinstance(representation, str)
-    for attr in ('title', 'content', 'created', 'updated', 'likes', 'dislikes', 'author'):
-        assert representation.find(attr) != -1
+    representation = str(Post(**POST_SAVE_DATA))
+    for attr_name in ('title', 'content', 'created', 'updated', 'likes', 'dislikes', 'author'):
+        assert representation.find(attr_name) != -1
